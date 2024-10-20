@@ -1,19 +1,27 @@
 # Introduction-to-Deep-Learning
 
-Table of Contents
+Inhaltsverzeichnis
 1. Introduction to Deep Learning
-Overview of the motivation behind deep learning and its importance in modern applications.
+Thema: Einführung in die Grundlagen des Deep Learning sowie aktuelle Anwendungen.
+Übung: Übung 1: Einführung in Deep Learning
 2. Basics of Machine Learning
-Key concepts, including loss functions, risk minimization, and model training.
+Thema: Grundlegende Konzepte des maschinellen Lernens wie Verlustfunktionen, Risiko-Minimierung und das Trainieren von Modellen.
+Übung: Übung 2: Maschinelles Lernen Grundlagen
 3. Neural Networks
-Introduction to neural networks, including deep and feedforward neural networks.
+Thema: Einführung in neuronale Netzwerke, insbesondere Feedforward- und tiefe neuronale Netze.
+Übung: Übung 3: Neuronale Netzwerke
 4. Convolutional Neural Networks
-Detailed discussion on convolutional layers, specifically for image recognition.
+Thema: Erläuterung der Verwendung von Convolutional Layers für die Bildverarbeitung.
+Übung: Übung 4: Convolutional Neural Networks
 5. Introduction to Recurrent Neural Networks
-A dive into sequence data and various forms of recurrent neural networks.
+Thema: Einführung in Recurrent Neural Networks (RNNs) zur Verarbeitung von Sequenzdaten.
+Übung: Übung 5: Recurrent Neural Networks
 6. Natural Language Processing
-Preprocessing, language models, and word embeddings for text data.
+Thema: Grundlagen der Verarbeitung von natürlicher Sprache (NLP), inklusive Wort-Embeddings und Sprachmodelle.
+Übung: Übung 6: Natural Language Processing
 7. More on Optimization
-Examination of optimization methods like Momentum, Adagrad, RMSProp, and Adam.
+Thema: Verschiedene Optimierungsmethoden wie Adam, RMSProp und dynamische Lernraten.
+Übung: Übung 7: Optimierungsmethoden
 8. Advanced Topics: GANs
-Introduction to Generative Adversarial Networks (GANs) and their applications.
+Thema: Generative Adversarial Networks (GANs), deren Herausforderungen und praktische Beispiele.
+Übung: Übung 8: GANs und Anwendungen
