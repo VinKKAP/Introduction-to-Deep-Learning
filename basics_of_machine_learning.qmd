@@ -1,0 +1,116 @@
+---
+title: "Einführung ML"
+format: html
+---
+
+
+### Create Tensors
+To create a tensor we start by importing the torch module and creating some basic tensors.
+
+```{python}
+import torch
+x = torch.arange(42)
+print (x)
+```
+
+Next, we list some of the most basic forms of properties and operations on tensors.
+
+```{python}
+torch.Size([42])
+```
+
+If we want to reshape the data, the reshape command (as in Numpy) is very helpful.
+```{python}
+X = x.reshape(6,7)
+print(X)
+print(X.shape)
+```
+
+This is the same as 
+```{python}
+X = x.reshape(6,-1)
+print(X)
+print(X.reshape)
+```
+
+```{python}
+X = x.reshape(-1,7)
+print(X)
+print(X.shape)
+```
+
+Instead of reshaping a vector to specific shape, we can specify the tensor directly.
+
+```{python}
+print(torch.tensor([[1,2],[3,4],[5,6]]))
+```
+
+In general, we intialialize tensors with random values, ones or zeros by specifying the dimensions.
+
+```{python}
+zeros = torch.zeros(2,3,4)
+print(zeros)
+```
+
+```{python}
+ones = torch.ones(2,3,4)
+print(ones)
+```
+
+```{python}
+random_tensor = torch.randn(2,3,4)
+print(random_tensor)
+```
+
+Here, torch.randn creates randomly drawn entries, where each entry is drawn independently from a standard normal distribution.
+
+1.5.2 Tensor Operations
+**Basic Operations**
+The most common arithmetic operators (addition, substraction, multiplication, division and exponentiation) are implemented to work elementwise on the tensor class for two tensors of the same shape.
+
+```{python}
+x = torch.tensor([3.0,2])
+y = torch.tensor([4.0,1])
+print(x+y, x-y, x/y, x**2)
+```
+
+Additionaly, some common functions as the exponential or logarithmic finction are implemented and executed elementwise.
+
+```{python}
+a = torch.exp(x)
+print(a, torch.log(a))
+```
+Further, combining tensors is a very important operation, which can be performed with the concatenate operation (torch.cat) To use torch.cat, two compatible tensors and the axis to concatenate along have to specified.
+
+```{python}
+cat_0 = torch.cat((zeros,ones), dim = 0)
+print(cat_0)
+```
+
+```{python}
+cat_1 = torch.cat((zeros,ones), dim = 1)
+print((cat_0), cat_1)
+```
+
+```{python}
+print(torch.cat((zeros,ones), dim = 2))
+```
+
+```{python}
+print(x,y,x <y)
+
+```
+
+```{python}
+print(x.sum(),x.mean)
+```
+
+The concept of Broadcasting is very useful to simplify some calculations. As seen above the elementwise operations, neeed the tensors to be of the same shape. 
+
+Under certain conditions, the elementwise operations can even be applied to tensors of different shape.
+
+```{python}
+x = torch.tensor([[3.0],[2]])
+y = torch.tensor([[4.0,1,2]])
+print(x.shape, y.shape)
+```
