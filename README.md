@@ -7,7 +7,7 @@ Dieses Repository enthält meine Projekte und zugehörige Datensätze für den K
 ## Inhalt
 
 ### Thema 1: Introduction to Deep Learning
-- [Mitschrift Vorlesung](Introduction%20to%20Deep%20Learning.qmd)
+- [Mitschrift Vorlesung](Introduction%20to%20Deep%20Learning)
 - [Notebook zur Übung 1](Übung%201%20Introduction%20to%20Deep%20Learning/IntroDL.ipynb)
 - [Datensatz 1](Übung%201%20Introduction%20to%20Deep%20Learning/data.csv)
 - **Beschreibung:** Einführung in die Grundlagen des Deep Learning sowie aktuelle Anwendungen.
