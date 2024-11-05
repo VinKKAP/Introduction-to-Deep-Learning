@@ -1,0 +1,131 @@
+---
+title: "Introduction to Deepl-Learning"
+format: html
+---
+
+The worlds most valuable recource is no longer oul, but data.
+*But*: (Big) Data has no value, per se.  The crucial question is what can be learned from the data and what conclusions can be drawn.
+-> Two main tasks are prediction and causal inference 
+
+Object Detection Repository: https://github.com/matterport/Mask_RCNN
+Wäre funny mal mit rum zu spielen.
+
+Deeplearning ist ein bereich von Machine Learning und dieser wiederum ein Bereich von Artificial Intelligence (AI).
+
+Klassisches Programmieren nutzt Regeln und Daten um eine Funktion (Antwort) zu erstellen, die ein Problem löst.
+
+Machine Learning nutzt Daten und Antworten um eine Funktion zu erstellen, die ein Problem löst.
+
+Wann sollte man Deeplearning nutzen und warum ist es so populär?
+    Traditionelle Machine Learning Modelle haben eine begrenzte Performance, um Daten zu verarbeiten. Dies führt zu einem Plateau in der Performance. Deeplearning Modelle haben eine höhere Performance die mit der Menge an daten zunimmt.
+    Generell ist zu sagen das die meisten Deeplearning Modelle andere Machine Learning Modelle übertreffen, wenn genug Daten vorhanden sind.
+
+Expressions in Deeplearning
+    - Training/Learning/Estimating
+    - Weights/Parameters
+    - Outcome/Label/ Dependent Variable
+    - Features/Independent Variables/ Input/ Regressor
+
+Software-frameworks
+    Es gibt verschiedene Frameworks, in dieser Vorlesung wird PyTorch verwendet. Es gibt aber auch Tensorflow, Keras, Theano, Caffe, CNTK, MXNet, Chainer, Deeplearning4j, Gluon, Caffe2, PaddlePaddle, BigDL, DL4J, Neon, CaffeOnSpark. 
+
+Tensors und Linear Algebra
+    Deeplearning ist auf Große Datensätze angewiesen und diese können in Form von Tensoren dargestellt werden. Tensoren sind eine Verallgemeinerung von Matrizen und Vektoren. Deshalb ist die Verwendung von Basic Linear Algebra hilfreich und nutzlich.
+    In Pytorch gibt es die Klasse Tensor, die die Basis für alle Berechnungen in Pytorch ist. Ein Tensor is eine n-dimensional array von nummerischen Werten. Die Tensor-Klasse ist vergleich mit der Numpy-Array-Klasse, aber mit zusätzlichen Funktionen für GPU-Berechnungen und automatisches Differenzieren.
+
+Create Tensors
+    Um einen Tensor zu erstellen, startet man mit dem importieren von torchmodul und erstellt einen simplen tensor.
+
+```{python}
+import torch
+x = torch.arange(42)
+print(x)
+```
+
+Als nächstes die eigenschaften des Tensos ausgeben.
+
+```{python} 
+print(x.shape)
+```
+
+Wenn man die Form neu definieren möchte, kann Numpy hilfreich sein.
+
+```{python} 
+X = x.reshape(6,7) #6 Zeilen und 7 Spalten
+print(X)
+print(X.shape)
+```
+
+Die Form eines Tensors kann auch mit -1 definiert werden, um die Form automatisch zu berechnen.
+
+```{python}
+X = x.reshape(6,-1) #6 Zeilen und 7 Spalten
+print(X)
+print(X.shape)
+```
+
+```{python}
+X = x.reshape(-1,7) #6 Zeilen und 7 Spalten
+print(X)
+print(X.shape)
+```
+
+Anstatt reshape kann auch ein Vektor in einem bestimmten Format erstellt werden.
+
+```{python}
+print (torch.tensor([[1,2],[3,4],[5,6]]))
+```
+
+Allgemein werden hier die tensoren mit randomisierten Werten, einsen oder nullen bei spezifischen Dimensionen erstellt.
+
+```{python}
+zeros = torch.zeros((2,3,4)) # 2 Matrizen mit 3 Zeilen und 4 Spalten
+print(zeros)
+```
+
+```{python}
+ones = torch.ones((2,3,4)) # 2 Matrizen mit 3 Zeilen und 4 Spalten
+print(ones)
+```
+
+```{python}
+random_tensor = torch.randn(2,3,4) # 2 Matrizen mit 3 Zeilen und 4 Spalten
+print(random_tensor)
+````
+
+Hier erstellt torch.randn einen Tensor mit zufälligen Werten, die einer Normalverteilung folgen.
+
+Tensor Operations
+    Tensoren können mit den üblichen Operationen wie Addition, Subtraktion, Multiplikation und Division bearbeitet werden. Diese Operationen können auch auf Tensoren mit unterschiedlichen Formen angewendet werden, wenn die Bedingungen für die Broadcasting-Regeln erfüllt sind. Broadcasting-Regeln sind Regeln, die die Bedingungen für die Anwendung von Operationen auf Tensoren mit unterschiedlichen Formen definieren. Zum Beispiel können zwei Tensoren mit unterschiedlichen Formen addiert werden, wenn die Formen der Tensoren einer oder beiden Dimensionen gleich sind.
+
+```{python}
+x = torch.tensor([3.0,2])
+y = torch.tensor([4.0,1])
+print(x+y, x-y, x*y, x/y, x**2)
+```
+
+Außerdem können bekannte funktionen wie exponential oder lograithm angewendet werden.
+
+```{python}
+a = torch.exp(x)
+print(a, torch.log(a))
+```
+
+Außerdem können Tensoren in sehr wichtigen Operationen, welche in concatenate operation (torch.cat) und dot product (torch.mm) bestehen, verwendet werden.
+
+```{python}
+cat_0 = torch.cat((zeros,ones), dim=0) # dim=0 bedeutet, dass die Tensoren in der ersten Dimension (Zeilen) zusammengefügt werden
+print(cat_0)
+```
+
+```{python}
+cat_1 = torch.cat((zeros, ones), dim=1) # dim=1 bedeutet, dass die Tensoren in der zweiten Dimension (Spalten) zusammengefügt werden
+print(cat_1)
+```
+
+```{python}
+print(torch.cat((zeros, ones), dim=2)) # dim=2 bedeutet, dass die Tensoren in der dritten Dimension zusammengefügt werden
+```
+
+Andere wichtige Operationen sind die Transposition und der Dot-Product zweier Tensoren. Transposition bedeuetet, dass die Zeilen und Spalten eines Tensors vertauscht werden. Der Dot-Product zweier Tensoren ist das Produkt der Elemente der beiden Tensoren. Das Produkt wird berechnet, indem die Elemente der ersten Zeile der ersten Matrix mit den Elementen der ersten Spalte der zweiten Matrix multipliziert werden. Die Ergebnisse werden dann addiert, um das erste Element der Ergebnismatrix zu erhalten.
+Der Dot-Product zweier Tensoren kann mit der Funktion torch.mm berechnet werden. 

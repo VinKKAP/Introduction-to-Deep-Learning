@@ -26,7 +26,7 @@ Dieses Repository enthält meine Projekte und zugehörige Datensätze für den K
 - [Datensatz 4](Übung%204%20Convolutional%20Neural%20Networks/images.zip)
 - **Beschreibung:** Erläuterung der Verwendung von Convolutional Layers für die Bildverarbeitung.
 
-### Thema 5: Recurrent Neural Networks
+### Thema 5: Introduction to Recurrent Neural Networks
 - [Notebook zur Übung 5](Übung%205%20Recurrent%20Neural%20Networks/RNN.ipynb)
 - [Datensatz 5](Übung%205%20Recurrent%20Neural%20Networks/sequence_data.csv)
 - **Beschreibung:** Einführung in Recurrent Neural Networks (RNNs) zur Verarbeitung von Sequenzdaten.
