@@ -264,5 +264,14 @@ Semi-Supervised Learning
 Regression vs. Classification
     Wenn die Target-Variable kontinuierlich ist, wird das Problem als Regression bezeichnet. Wenn die Target-Variable kategorisch ist, wird das Problem als Classification bezeichnet.
 
-Loss Function
+## Loss Function
     Die Loss Function ist eine Funktion, die die Differenz zwischen den tatsächlichen und den vorhergesagten Werten misst. Das Ziel ist es, die Loss Function zu minimieren. Die Loss Function hängt von der Art des Problems ab. Zum Beispiel ist die Mean Squared Error (MSE) eine gängige Loss Function für Regression und die Cross-Entropy Loss Function eine gängige Loss Function für Classification.
+
+Mapping: Die Funktion f(x) oder das Model (f) nimmt die Input-Daten (x) und gibt die Output-Daten (y) zurück. Das Ziel ist es, die Funktion f(x) zu lernen, die die Beziehung zwischen den Input- und Output-Daten approximiert.
+    Die Loss Funktion misst die Differenz zwischen den tatsächlichen und den vorhergesagten Werten. Das Ziel ist es, die Loss Funktion zu minimieren.
+        Durch Optimierungsprozess wie z.B. Gradient Descent wird die Loss Funktion minimiert.
+Im Regressions kontext ist ein bekanntes Setting vom Loss der Squared loss. (y_1-y_2)^2. 
+
+Es ist möglich das l_2 norm zu minimieren, um die Loss Function zu minimieren. 
+
+Außerdem gibt es die absolute loss function, die die absolute Differenz zwischen den tatsächlichen und den vorhergesagten Werten misst.
