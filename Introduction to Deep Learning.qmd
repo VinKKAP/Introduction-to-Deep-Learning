@@ -275,3 +275,193 @@ Im Regressions kontext ist ein bekanntes Setting vom Loss der Squared loss. (y_1
 Es ist möglich das l_2 norm zu minimieren, um die Loss Function zu minimieren. 
 
 Außerdem gibt es die absolute loss function, die die absolute Differenz zwischen den tatsächlichen und den vorhergesagten Werten misst.
+
+## Risk Minimization
+    Das Ziel des Machine Learning ist es, die Loss Function zu minimieren. Das Risiko ist die erwartete Loss Function über alle möglichen Input-Output-Paare. Das Ziel ist es, das Risiko zu minimieren. Das Risiko kann in zwei Teile unterteilt werden: den empirischen Risiko und den strukturellen Risiko. Das empirische Risiko ist der durchschnittliche Loss über die Trainingsdaten. Das strukturelle Risiko ist ein Maß für die Komplexität des Modells. Das Ziel ist es, das strukturelle Risiko zu minimieren, ohne das empirische Risiko zu erhöhen.
+    Die Herausforderung ist es den Parameter vecto Ro0 zu finden, welche das risiko minimiert.
+
+    Anstelle alles per Hand zu machen ist es möglich die automatische differenzierung von pytorch zu nutzen.
+
+```{python}
+import torch
+x_0 = torch.tensor([-.9,.8],requires_grad = True)
+print(x_0)
+````
+
+requires_grad = True spezifiziert einen Ort im Speicher, wo die Gradienten gespeichert werden.
+Das würde eine menge Speicher verbrauchen, wenn für jede neue Variante jeder Wert geupdated wird.
+
+```{python}
+fx = sum(x_0**2)
+print(fx)
+```
+
+We can automatically calculate the gradient of the function with respect to the input using the backpropagatoion.
+
+```{python}
+fx.backward()
+print(x_0.grad)
+```
+
+Here, the backpropagation traces the computatinonal graph backwards to x_0 (in this case only one step) and calculates
+the partial derivatives. To detach the calculatios from the computational graph we can use.
+
+```{python}
+print(x_0.detach())
+```
+
+## Training a Machine Learning Model
+
+In the previous sections, we have defined learning/training a machine learning model as learning parameters/weights, which minimize the empirical risk
+In deep learning this is generally done with gradient descent methods due to the cimplicated form of f(x,ro).
+1. Erst wrden die Prediction Rule berechnet
+2. Dann wird die Loss Function berechnet
+3. Dann wird der Gradient der Loss Function berechnet
+-----------------------------------------------------
+4. Dann wird der Gradient verwendet um die Parameter zu updaten
+
+## Basic Linear Regression
+
+In a basic multicariate linear regression model, we assume that the output Y is a linear function of the inputs X = 1,X1,...,Xp. The model can be written as Y = W0 + W1X1 + ... + WpXp + E, where W0,W1,...,Wp are the parameters of the model and E is the error term. The goal is to learn the parameters W0,W1,...,Wp that minimize the loss function.
+Therefore, we can interpret this as minimzing the average squared loss, with the weights w being the parameter vector ro0 we would like to learn.
+
+For linear models there exists an analytical solution (under some mild assumptions). Instead of directly using the analytical solution to estimate the weights w, we apply the gradient descent method.
+
+In the following, we implement basic linear regression including a small bivariate simulation example. We generate n= 200 observationswith the following process.
+Y = 2-3X1 - 1.5X2 + E, where E is a random error term.
+
+```{python}
+import random; import torch
+
+def dgp_linear_regression(weights, intercept, n):
+    X = torch.normal(0, 1, (n, len(weights)))
+    Y = intercept + torch.mv(X, weights) + torch.normal(0, 1, (1, n))
+    return X, Y.reshape(-1, 1)
+
+true_weights = torch.tensor([-3.0, -1.5])
+true_intercept = 2
+
+# Generate data
+n_obs = 200
+torch.manual_seed(42)  # Set a seed for replicability
+features, labels = dgp_linear_regression(true_weights, true_intercept, n_obs)
+
+print(features)
+print(labels)
+```
+
+Remark that we defined the intercept (or bias) separately (which is more convenient and saves computationla resources).
+Let us take a look at the generated data.
+
+```{python}
+%matplotlib inline
+import numpy as np; import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D; from mpl_toolkits.mplot3d import proj3d
+
+fig = plt.figure(figsize=(20,10), dpi = 100); ax = fig.add_subplot(111,projection='3d')
+x1 = features[:,0]
+x2 = features[:,1]
+y = labels
+ax.scatter(x1, x2, y, c='r', marker='o')
+ax.set_xlabel('Featue $X_1$'); ax.set_ylabel('Feature $X_2'); ax.set_zlabel('Outcome Y')
+plt.show()
+```
+
+We will initialize our weights randomly with distribution N(0,0.1) and set the bias to 0.
+
+```{python}
+weights = torch.normal(0, 0.1,size = (2, 1), requires_grad = True)
+intercept = torch.zeros(1,requires_grad=True)
+print(weights)
+print(intercept)
+```
+
+At first let us calculate the predicted values (with random weights).
+
+```{python}
+Y_hat = intercept + torch.mm(features, weights)
+print(Y_hat[0:5])
+```
+
+Next, we want to calculate the empirical loss.
+
+```{python}
+training_loss = torch.mean((Y_hat-labels.reshape(Y_hat.shape))**2)
+print(training_loss)
+```
+
+here, training_loss.backwards() will compute the graient of loss with repsect to all Tensor that have requires_grad = True. The gradient takes the folowing form:
+
+```{python}
+training_loss.backward()
+print(weights.grad)
+print(intercept.grad)
+```
+
+Next, we update the parameters
+
+```{python}
+learning_rate = 0.001
+with torch.no_grad():
+    weights -= learning_rate * weights.grad
+    intercept -= learning_rate * intercept.grad
+
+    # Manually zero the gradients after updating weights
+    weights.grad.zero_()
+    intercept.grad.zero_()
+
+print(weights)
+print(intercept)
+```
+
+Remark that we used torch.no_grad(), because the parameters have requieres_grad= True, but we dont want to track this step in autograd. Audditionally, we have to reset the gradient to zero, if we want to repeat this step multiple times. 
+
+An alternative way is to operate on weights.data and weights.grad.data Here, tensor.data gives a tensor that shares the storage with tensor, but doenst track history.
+
+```{python}
+weights.data -= learning_rate * weights.grad.data
+intercept.data -= learning_rate * intercept.grad.data
+# Manually zero the gradients after updating weights
+weights.grad.data.zero_()
+intercept.grad.data.zero_()
+print(weights)
+print(intercept)
+```
+
+We will now combine all of this in a loop (with a slightly larger learning rate) to iteratively minimize the empirical risk (loss function).
+
+```{python}
+learning_rate = 0.03
+for i in range (500):
+    Y_hat = intercept + torch.mm(features, weights)
+    training_loss = torch.mean((Y_hat-labels.reshape(Y_hat.shape))**2)
+    training_loss.backward()
+    with torch.no_grad():
+        weights -= learning_rate * weights.grad
+        intercept -= learning_rate * intercept.grad
+        # Manually zero the gradients after updating weights
+        weights.grad.zero_()
+        intercept.grad.zero_()
+
+print(weights)
+print(intercept)
+```
+
+Our parameters are quite close to the true values. Lets take a look at our final model.
+
+```{python}
+from matplotlib import cm
+xs = np.tile(np.arange(61), (61,1))
+ys = np.tile(np.arange(61), (61,1)).T
+base_grid = np.arange(-3,3,0.1)
+xs = np.tile(base_grid, (len(base_grid),1))
+ys = np.tile(base_grid, (len(base_grid),1)).T
+
+zs = xs*weights[0].detach().numpy() + ys*weights[1].detach().numpy() + intercept.detach().numpy()
+
+ax.plot_surface(xs,ys,zs, cmap = cm.coolwarm, alpha = 0.5)
+fig
+```
+
+## Stochastic Gradient Descent
+
