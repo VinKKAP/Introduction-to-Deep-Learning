@@ -499,5 +499,223 @@ for X,Y in data_iter(5, features, labels): #test the batches
     break
 ```
 
-asdad
+Now we can repeat the model training.
 
+```{python}
+weights = torch.normal(0, 0.1, size=(2, 1), requires_grad=True)
+intercept = torch.zeros(1, requires_grad=True)
+learning_rate = 0.03
+batch_size = 10
+n_epochs = 5
+for epoch in range (n_epochs):
+    for X, Y in data_iter(batch_size, features, labels):
+        Y_hat = intercept + torch.mm(X,weights)
+        training_loss = torch.mean((Y_hat - Y.reshape(Y_hat.shape))**2)
+        training_loss.backward()
+        with torch.no_grad():
+            weights -= learning_rate * weights.grad
+            intercept -= learning_rate * intercept
+            weights.grad.zero_()
+            intercept.grad.zero_()
+
+print(weights)
+print(intercept)
+```
+
+There exist a lot of different variants of the stochastic gradient descent algorithms, wich are explaned in more detail in later sections.
+
+## Building Linear Regression using High-Level APIs
+
+How to implement the linear regressino model by using high-level API´s of deep learning frameworks. The first step is to implement a data. Features and labels pass as arguments and specify batch_size when instantiating a data iterator object. Besides boolean value (Values are True or False) is_train indicates wether or not we want the data iterator object to shuffle the data on each epoch (pass through the dataset).
+
+```{python}
+from torch.utils import data
+def load_array(data_arrays, batch_size, is_train=True):
+    """ Construct a PyTorch data iterator. """
+    dataset = data.TensorDataset(*data_arrays)
+    return data.DataLoader(dataset, batch_size, shuffle=is_train)
+
+batch_size = 10
+data_iter = load_array((features, labels), batch_size)
+```
+
+Um zu prüfen ob das funktioniert, können wir die ersten Batches ausgeben.
+
+```{python}
+print(next(iter(data_iter)))
+```
+
+```{python}
+from torch import nn
+lin_reg = nn.Sequential(nn.Linear(2,1))
+```
+
+nn is an neural network in a linear transformation layer. The input and output dimensions are 2 and 1, respectively.
+To initalize the weights (with w_0=bias).
+
+```{python}
+lin_reg[0].weight.data.normal_(0, 0.1)
+lin_reg[0].bias.data.fill_(0)
+print(lin_reg[0].weight.data)
+print(lin_reg[0].bias.data)
+```
+
+Specify the loss:
+
+```{python}
+loss = nn.MSELoss()
+```
+
+To optimization use torch.optim which is a package implementing various optimization algorithms. 
+
+```{python}
+trainer = torch.optim.SGD(lin_reg.parameters(), lr = 0.01)
+```
+
+torch.optim.SGD constructs a stochastic gradient descent optimizer for all weights of lin_reg with the lr beeing the learning rate.
+
+```{python}
+num_epochs = 5
+for epoch in range (num_epochs):
+    for X, y in data_iter:
+        training_loss = loss(lin_reg(X), y)
+        trainer.zero_grad() # Reset the gradient to zero
+        training_loss.backward() # Compute gradient on training_loss
+        trainer.step() # Update the weights using the gradient
+
+    training_loss = loss(lin_reg(features), labels) # Compute the loss with the updated weights
+    
+    print(f'epoch {epoch + 1}, loss {training_loss:f}')
+``` 
+
+```{python}
+w = lin_reg[0].weight.data
+print('Estimated weights w:', w)
+b = lin_reg[0].bias.data
+print('Estimated intercept/bias b:', b)
+```
+
+## Asseing Model Performance
+
+Why it can fail to build up the machine learning model just by minimizing the empircal risk. Its important keep in mind that the target functions will most likely wont be a linear function. 
+
+```{python}
+n = 10 # number of oberservations
+torch.manual_seed(42) # Set a seed for replicability
+
+features = 2*torch.rand(n,1) - 1
+labels = 0.5-1.4*features + 4.4*features**2 - 2.1*features**3 + torch.normal(0,1,(1,n)).reshape(-1,1)
+```
+
+```{python}
+fig = plt.figure(figsize=(5,4), dpi= 200)
+plt.scatter(features, labels, c='r')
+x = torch.arange(-1,1,0.01)
+fx = 0.5-1.4*x + 4.4*x**2 - 2.1*x**3
+plt.plot(x,fx, c='g')
+plt.grid(True)
+plt.ylim((-2,10))
+plt.show()
+```
+
+A linear regression is too simple capture the data generating process. 
+
+```{python}
+batch_size = 10
+data_iter = load_array((features, labels), batch_size)
+lin_reg = nn.Sequential(nn.Linear(1,1))
+lin_reg[0].weight.data.normal_(0, 0.1)
+lin_reg[0].bias.data.fill_(0)
+loss = nn.MSELoss()
+trainer = torch.optim.SGD(lin_reg.parameters(), lr = 0.03)
+num_epochs = 50
+for epoch in range (num_epochs):
+    for X, y in data_iter:
+        training_loss = loss(lin_reg(X), y)
+        trainer.zero_grad() # reset the gradient to zero
+        training_loss.backward()
+        trainer.step()
+training_loss = loss(lin_reg(features), labels) #calculate the loss with the updated weights on the whole dataset
+print(f'epoch {epoch + 1}, loss {training_loss:f}')
+```
+
+```{python}
+fig = plt.figure(figsize=(5,4), dpi= 200)
+plt.scatter(features, labels, c='r')
+fx_hat = lin_reg[0].bias.data + lin_reg[0].weight.data.detach()*x
+plt.plot(x,fx, c='g')
+plt.plot(x,fx_hat.reshape(-1,1), c='b')
+plt.grid(True)
+plt.ylim((-2,10))
+plt.show()
+```
+
+This called underfitting since the machine learning model is too imple and therefore not able to approximate f_0. 
+
+It can be increased the capability of linear regression by using polynomial regression, which increases the flexibility of our machine learning model. BUT if the flexibility is too large, the training process might not converge to a helpful solution, but instead start to "learn" the noise in the data. 
+
+```{python}
+max_degr = 10
+polynomial_features = features
+for degr in range (1,max_degr):
+    polynomial_features = torch.cat((polynomial_features, features**(degr+1)), dim= 1)
+```
+
+```{python}
+batch_size = 10
+data_iter = load_array((polynomial_features, labels), batch_size)
+lin_reg = nn.Sequential(nn.Linear(max_degr,1))
+lin_reg[0].weight.data.normal_(0, 0.01)
+lin_reg[0].bias.data.fill_(0)
+loss = nn.MSELoss()
+trainer = torch.optim.SGD(lin_reg.parameters(), lr = .4)
+num_epochs = 50000
+for epoch in range (num_epochs):
+    for X, y in data_iter:
+        training_loss = loss(lin_reg(X), y)
+        trainer.zero_grad() # reset the gradient to zero
+        training_loss.backward()
+        trainer.step()
+training_loss = loss(lin_reg(polynomial_features), labels) # calculate the loss with the updated weights on the whole dataset
+
+print(f'epoch {epoch + 1}, loss {training_loss:f}')
+```
+
+```{python}
+fig = plt.figure(figsize=(5,4), dpi= 200)
+plt.scatter(features, labels, c='r')
+fx_hat_2 = lin_reg[0].bias.data.detach()+lin_reg[0].weight.data[0,0].detach()*x
+for degr in range (1,max_degr):
+    fx_hat_2 += lin_reg[0].weight.data[0,degr].detach()*x**(degr+1)
+plt.plot(x,fx,c='g')
+plt.plot(x,fx_hat_2.reshape(-1,1), c='b')
+plt.grid(True)
+plt.ylim((-2,10))
+plt.show()
+``` 
+
+This "learning" of the noise is called overfitting. For example in the context of image recognition this might correspond to learning irrelevant artifacts like backgrounds or shadows.
+
+For the mean-sqaured error under- and overfitting can be motivated with the bias-variance-tradeoff:
+
+To avoid under- and overfitting it is important to monitor model performance during the training procedure.
+In general, thi is done by sample splitting.
+
+Sample splitting refers to creating several subsets of your sample, which are used for different purposes.
+    - Training set: used to train weights of the machine learning algorithm
+    - Testing Set: Used to evaluate the risk of the final model
+    - Validation Set: Sometimes the training set is split further to monitor the training process and schoose some tuning parameters.
+
+```{python}
+n_test = 20 # number of observations
+test_features = 2*torch.rand(n,1) - 1
+test_polynomial_features = test_features
+for degr in range (1,max_degr):
+    test_polynomial_features = torch.cat((test_polynomial_features, test_features**(degr+1)), dim=1)
+
+test_labels = 0.5-1.4*test_features + 4.4*test_features**2 - 2.1*test_features**3 + torch.normal(0,1,(1,n)).reshape(-1,1)
+
+print(f'epoch {epoch + 1}, loss {training_loss:f}') #recap the training loss
+test_loss = loss(lin_reg(test_polynomial_features), test_labels) #calculate the loss on the whole training sample
+print(f'epoch {epoch + 1}, loss {test_loss:f}')
+```
