@@ -465,3 +465,39 @@ fig
 
 ## Stochastic Gradient Descent
 
+The training loop from the previous chapter, displays the basic idea of training a machine learning model with descent.
+In practice, if the number of observations n is realy large and the function f(x,ro) is more complex we will run into computational problems really fast. In general, the calculation of the gradient on all samples is too costly.
+An easy solution is to use a stochastic version of the gradient descent method called stochastic gradient descent.
+
+Instead of using all samples in each interation of the training loop, we will only use a small random subset of the observations, where the subset is called batch. 
+Stochastic gradient descent generally refers to only using a single observation for each update step (batch size of one). Very small subsets are usually calld mini-batch, where using the whole sample is called full batch.
+
+The basic idea is that on a random sample the gradient is still a unbiased (but noisy) estimate of the true gradient.
+
+In practice deep learning is done in a series of epochs, where one epoch consists of one backpropagation pass over the whole dataset. 
+In the previous example, we did use full batch and each iteration corresponded to one epoch.
+
+General Training Procedure:
+    1. Set the number of epochs and the batch size
+    2. Randomly devide the training set into batches of the specified batch size. 
+    3. Interate the training loop over all batches (each iteration a batch is randomly drawn without replacement).
+    4. Repeat steps 2 and 3 for each epoch. 
+
+We will repeat the linear regression example with stochastic gradient descent. At first, we will need a data loader, wich automatically provides the batches.
+
+```{python}
+def data_iter(batch_size, features, labels):
+    n = len(labels)
+    indices = list(range(n))
+    random.shuffle(indices)
+    for i in range (0,n,batch_size):
+        batch_indices = torch.tensor(indices[i:min(i+batch_size,n)])
+        yield features[batch_indices], labels[batch_indices]
+
+for X,Y in data_iter(5, features, labels): #test the batches
+    print(X, "\n", Y)
+    break
+```
+
+asdad
+
